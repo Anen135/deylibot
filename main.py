@@ -33,14 +33,25 @@ intents.guilds = True
 
 client = discord.Client(intents=intents)
 
+# Хранилище: пользователь -> изначальный канал
+user_original_channels = {}
 
 @client.event
 async def on_ready():
     print(f"[+] Бот вошёл как {client.user}")
     await do_daily_task()
-    print("[✓] Задача завершена. Завершаем процесс...")
-    await client.close()
+    print("[~] Ожидание команды завершения...")
 
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.content.lower() == "!shutdown":
+        await message.channel.send("📦 Возвращаю пользователей на места и отключаюсь...")
+        await return_users()
+        await message.channel.send("✅ Все возвращены. Бот отключается.")
+        await client.close()
 
 async def do_daily_task():
     tz = pytz.timezone('Asia/Almaty')
@@ -62,21 +73,29 @@ async def do_daily_task():
             except Exception as e:
                 print(f"[✘] Не удалось отправить сообщение: {e}")
 
-        moved_users = set()
         for voice_channel in guild.voice_channels:
             if voice_channel.id not in SOURCE_VC_IDS:
                 continue
             for member in voice_channel.members:
-                if member not in moved_users and member.voice:
+                if member.voice:
                     try:
+                        user_original_channels[member.id] = voice_channel.id
                         await member.move_to(target_channel)
-                        moved_users.add(member)
-                        print(f"[✔] Перемещён: {member.display_name}")
+                        print(f"[✔] Перемещён: {member.display_name} из {voice_channel.name}")
                     except discord.Forbidden:
                         print(f"[✘] Нет прав: {member.display_name}")
                     except Exception as e:
                         print(f"[✘] Ошибка: {e}")
 
-
-if __name__ == "__main__":
-    asyncio.run(client.start(TOKEN))
+async def return_users():
+    for guild in client.guilds:
+        for member in guild.members:
+            if member.id in user_original_channels and member.voice:
+                original_channel_id = user_original_channels[member.id]
+                original_channel = guild.get_channel(original_channel_id)
+                if original_channel:
+                    try:
+                        await member.move_to(original_channel)
+                        print(f"[⏪] {member.display_name} возвращён в {original_channel.name}")
+                    except Exception as e:
+                        print(f"[✘] Не удалось вернуть {member.display_name}: {e}")
