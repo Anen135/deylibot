@@ -102,9 +102,9 @@ async def return_users():
                     print(f"[✘] Не удалось вернуть {member.display_name}: {e}")
 
 # Точка входа
-if __name__ == "__main__":
-    try:
-        print("[LOG] Запуск Discord-клиента...")
-        asyncio.run(client.start(TOKEN))
-    except Exception as e:
-        print(f"[FATAL] Ошибка при запуске бота: {e}")
+
+try:
+    print("[LOG] Запуск Discord-клиента...")
+    asyncio.run(client.start(TOKEN))
+except Exception as e:
+    print(f"[FATAL] Ошибка при запуске бота: {e}")
