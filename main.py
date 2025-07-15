@@ -33,9 +33,11 @@ user_original_channels = {}
 
 @client.event
 async def on_ready():
-    print(f"[+] Бот успешно запущен как {client.user}")
+    print(f"[READY] Logged in as {client.user}", flush=True)
     await do_daily_task()
-    print("[~] Задача выполнена. Ожидаю команду `!shutdown` для завершения.")
+    print("[DONE] Task complete, exiting...", flush=True)
+    await client.close()
+
 
 @client.event
 async def on_message(message):
