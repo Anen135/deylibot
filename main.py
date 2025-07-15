@@ -5,7 +5,7 @@ import datetime
 import asyncio
 
 # Получаем токен из переменных окружения
-TOKEN = os.environ.get("DISCORD_TOKEN")
+TOKEN = "MTM4Mjk2NTI5ODY3NTU4NTAzNA.GNhCjg.WSTWRLXnZ_m6EkoTsdERpPX6dPhk6CtPW3Hzlw"
 
 # ID нужных каналов
 TARGET_TEXT_CHANNEL_ID = 123456789012345678
