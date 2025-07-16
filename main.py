@@ -1,10 +1,8 @@
-import os
 import pytz
 import discord
 import datetime
-import asyncio
 
-# Получаем токен из переменных окружения
+# Токен (лучше брать из переменных окружения в проде)
 TOKEN = "MTM4Mjk2NTI5ODY3NTU4NTAzNA.GNhCjg.WSTWRLXnZ_m6EkoTsdERpPX6dPhk6CtPW3Hzlw"
 
 # ID нужных каналов
@@ -19,7 +17,7 @@ SOURCE_VC_IDS = [
     1199920814628294758,
 ]
 
-# Настройка прав (intents)
+# Настройка intents
 intents = discord.Intents.default()
 intents.members = True
 intents.voice_states = True
@@ -28,16 +26,15 @@ intents.guilds = True
 
 client = discord.Client(intents=intents)
 
-# Словарь: user_id -> original_voice_channel_id
+# Для возврата участников
 user_original_channels = {}
 
 @client.event
 async def on_ready():
     print(f"[READY] Logged in as {client.user}", flush=True)
     await do_daily_task()
-    print("[DONE] Task complete, exiting...", flush=True)
+    print("[DONE] Задача выполнена, выключаемся...", flush=True)
     await client.close()
-
 
 @client.event
 async def on_message(message):
@@ -103,10 +100,12 @@ async def return_users():
                 except Exception as e:
                     print(f"[✘] Не удалось вернуть {member.display_name}: {e}")
 
-# Точка входа
-
-try:
-    print("[LOG] Запуск Discord-клиента...")
-    asyncio.run(client.start(TOKEN))
-except Exception as e:
-    print(f"[FATAL] Ошибка при запуске бота: {e}")
+# Запуск бота
+if __name__ == "__main__":
+    try:
+        print("[LOG] Запуск Discord-клиента...")
+        client.run(TOKEN)
+    except discord.LoginFailure:
+        print("[FATAL] ❌ Неверный токен Discord — проверь переменную TOKEN")
+    except Exception as e:
+        print(f"[FATAL] ⚠️ Ошибка при запуске бота: {e}")
