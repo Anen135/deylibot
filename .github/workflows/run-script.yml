@@ -8,7 +8,7 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 10  # Защита от зависания
+    timeout-minutes: 60  # Защита от зависания
 
     steps:
       - name: 🧾 Checkout repository
