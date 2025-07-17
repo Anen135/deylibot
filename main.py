@@ -99,3 +99,7 @@ async def return_users():
                         print(f"[⏪] {member.display_name} возвращён в {original_channel.name}")
                     except Exception as e:
                         print(f"[✘] Не удалось вернуть {member.display_name}: {e}")
+
+# Запуск бота
+if __name__ == "__main__":
+    asyncio.run(client.start(TOKEN))
