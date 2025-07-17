@@ -1,38 +1,37 @@
-name: 🕒 Daily Discord Bot Task
+name: Daily Discord Bot Task
 
 on:
   schedule:
-    - cron: '0 5 * * 1-5'  # Пн–Пт в 05:00 UTC = 11:00 по Алматы (UTC+6)
-  workflow_dispatch:       # Ручной запуск по запросу
+    - cron: '0 5 * * 1-5'  # Пн–Пт в 05:00 UTC = 11:00 по Алматы
+  workflow_dispatch:       # Ручной запуск
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 60  # Защита от зависания
+    timeout-minutes: 60
 
     steps:
-      - name: 🧾 Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: 🐍 Set up Python 3.10
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         run: |
-          echo "📦 Installing dependencies..."
+          echo "Installing dependencies..."
           pip install --upgrade pip
           pip install --no-cache-dir discord.py==2.3.2 pytz
 
-      - name: 🚀 Run bot script
+      - name: Run bot script
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
         run: |
-          echo "🚀 Starting main.py..."
+          echo "Running main.py..."
           python main.py
-        continue-on-error: true  # Не прерывает workflow на ошибке — идём дальше
+        continue-on-error: true
 
-      - name: ✅ Show exit code
-        run: |
-          echo "✅ Script finished with exit code: $?"
+      - name: Show exit code
+        run: echo "Script finished with exit code: $?"
