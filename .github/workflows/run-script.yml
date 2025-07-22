@@ -32,6 +32,8 @@ jobs:
         run: |
           echo "Running main.py..."
           python main.py
+          echo $? > exit_code.txt
 
       - name: Show exit code
-        run: echo "Script finished with exit code: $?"
+        run: |
+          echo "Script finished with exit code: $(cat exit_code.txt)"
