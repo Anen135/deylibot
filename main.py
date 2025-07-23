@@ -32,15 +32,14 @@ intents.message_content = True
 intents.guilds = True
 
 client = discord.Client(intents=intents)
-
-# Хранилище: пользователь -> изначальный канал
 user_original_channels = {}
 
 @client.event
 async def on_ready():
     print(f"[+] Бот вошёл как {client.user}")
+    await wait_until_11_almaty()
     await do_daily_task()
-    print("[~] Ожидание команды завершения...")
+    print("[~] Ожидание команды !shutdown...")
 
 @client.event
 async def on_message(message):
@@ -53,10 +52,23 @@ async def on_message(message):
         await message.channel.send("✅ Все возвращены. Бот отключается.")
         await client.close()
 
+async def wait_until_11_almaty():
+    tz = pytz.timezone("Asia/Almaty")
+    now = datetime.datetime.now(tz)
+
+    target_time = now.replace(hour=11, minute=0, second=0, microsecond=0)
+    if now >= target_time:
+        print("[~] Уже после 11:00 — начинаем сразу.")
+        return
+
+    wait_seconds = (target_time - now).total_seconds()
+    print(f"[~] Ждём до 11:00 по Алматы ({wait_seconds:.0f} секунд)...")
+    await asyncio.sleep(wait_seconds)
+
 async def do_daily_task():
     tz = pytz.timezone('Asia/Almaty')
     now = datetime.datetime.now(tz)
-    print(f"[~] Выполнение задачи: {now.strftime('%Y-%m-%d %H:%M')}")
+    print(f"[~] Выполнение задачи в {now.strftime('%Y-%m-%d %H:%M')} по Алматы")
 
     for guild in client.guilds:
         target_channel = guild.get_channel(TARGET_VC_ID)
@@ -85,7 +97,7 @@ async def do_daily_task():
                     except discord.Forbidden:
                         print(f"[✘] Нет прав: {member.display_name}")
                     except Exception as e:
-                        print(f"[✘] Ошибка: {e}")
+                        print(f"[✘] Ошибка при перемещении: {e}")
 
 async def return_users():
     for guild in client.guilds:
@@ -100,6 +112,5 @@ async def return_users():
                     except Exception as e:
                         print(f"[✘] Не удалось вернуть {member.display_name}: {e}")
 
-# Запуск бота
 if __name__ == "__main__":
     asyncio.run(client.start(TOKEN))
