@@ -52,6 +52,11 @@ async def on_message(message):
         await message.channel.send("✅ Все возвращены. Бот отключается.")
         await client.close()
 
+    elif message.content.lower() == "!force_shutdown":
+        await message.channel.send("⚠️ Принудительное выключение без возврата пользователей...")
+        await client.close()
+
+
 async def wait_until_11_almaty():
     tz = pytz.timezone("Asia/Almaty")
     now = datetime.datetime.now(tz)
